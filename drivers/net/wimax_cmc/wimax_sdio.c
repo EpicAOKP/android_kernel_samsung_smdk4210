@@ -1206,6 +1206,7 @@ static int wimax_power_on(struct wimax732_platform_data *pdata)
 	if (err < 0) {
 		pr_err("sdio_enable func error = %d", err);
 		release_firmware(adapter->fw);
+		adapter->fw = NULL;
 		goto sdioen_fail;
 	}
 
@@ -1220,6 +1221,7 @@ static int wimax_power_on(struct wimax732_platform_data *pdata)
 	if (err < 0) {
 		pr_err("sdio_claim_irq = %d", err);
 		release_firmware(adapter->fw);
+		adapter->fw = NULL;
 		goto sdioirq_fail;
 	}
 	sdio_set_block_size(adapter->func, CMC_BLOCK_SIZE);
@@ -1238,6 +1240,7 @@ static int wimax_power_on(struct wimax732_platform_data *pdata)
 			pr_err("no modem response");
 		if ((++count > MODEM_RESP_RETRY) || (ret == -ERESTARTSYS)) {
 			release_firmware(adapter->fw);
+			adapter->fw = NULL;
 			goto firmware_download_fail;
 		}
 	}
@@ -1248,15 +1251,16 @@ static int wimax_power_on(struct wimax732_platform_data *pdata)
 	if (ret) {
 		if (ret == -ERESTARTSYS) {
 			pr_err("-ERESTARTSYS firmware download fail");
-			release_firmware(adapter->fw);
 			goto firmware_download_fail;
 		}
 	} else {
 		pr_err("%s CMC_FIRMWARE_DOWNLOAD_TIMEOUT", __func__);
 		release_firmware(adapter->fw);
+		adapter->fw = NULL;
 		goto firmware_download_fail;
 	}
 	release_firmware(adapter->fw);
+	adapter->fw = NULL;
 
 	/*wait for firmware to initialize before proceeding*/
 	msleep(1700);
@@ -1399,6 +1403,9 @@ probe_timeout:
 
 	/*wait for power off transients*/
 	msleep(250);
+
+	if (adapter->fw)
+		release_firmware(adapter->fw);
 
 	free_netdev(net);
 	pdata->adapter_data = NULL;

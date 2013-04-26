@@ -375,7 +375,7 @@ static int m5mo_power_on(void)
 	ret = regulator_enable(regulator);
 	regulator_put(regulator);
 	CAM_CHECK_ERR_RET(ret, "enable cam_isp_core");
-	/* No delay */
+	udelay(15);
 
 	/* CAM_SENSOR_CORE_1.2V */
 	ret = gpio_direction_output(GPIO_CAM_SENSOR_CORE, 1);
@@ -395,6 +395,9 @@ static int m5mo_power_on(void)
 
 	/* VT_CORE_1.5V */
 	ret = gpio_direction_output(GPIO_VT_CAM_15V, 1);
+#ifdef CONFIG_TARGET_LOCALE_NA
+	s3c_gpio_setpull(GPIO_VT_CAM_15V, S3C_GPIO_PULL_NONE);
+#endif /* CONFIG_TARGET_LOCALE_NA */
 	CAM_CHECK_ERR_RET(ret, "output VT_CAM_1.5V");
 	udelay(20);
 
@@ -836,12 +839,26 @@ static int m5mo_power(int enable)
 
 	printk(KERN_DEBUG "%s %s\n", __func__, enable ? "on" : "down");
 	if (enable) {
+#if defined(CONFIG_TARGET_LOCALE_NA)
+		exynos_cpufreq_lock(DVFS_LOCK_ID_CAM, 1);
 		ret = m5mo_power_on();
+		exynos_cpufreq_lock_free(DVFS_LOCK_ID_CAM);
+#else
+
+		ret = m5mo_power_on();
+#endif
 		if (unlikely(ret))
 			goto error_out;
-	} else
+	} else {
+#if defined(CONFIG_TARGET_LOCALE_NA)
+		exynos_cpufreq_lock(DVFS_LOCK_ID_CAM, 1);
 		ret = m5mo_power_down();
+		exynos_cpufreq_lock_free(DVFS_LOCK_ID_CAM);
+#else
 
+		ret = m5mo_power_down();
+#endif
+	}
 	ret = s3c_csis_power(enable);
 	m5mo_flash_power(enable);
 
@@ -1732,6 +1749,8 @@ static struct s3c_mshci_platdata exynos4_mshc_pdata __initdata = {
 	.max_width = 8,
 	.host_caps = MMC_CAP_8_BIT_DATA | MMC_CAP_1_8V_DDR |
 			MMC_CAP_UHS_DDR50 | MMC_CAP_CMD23,
+	/* enable PON */
+	.host_caps2 = MMC_CAP2_POWEROFF_NOTIFY,
 #elif defined(CONFIG_EXYNOS4_MSHC_8BIT)
 	.max_width = 8,
 	.host_caps = MMC_CAP_8_BIT_DATA | MMC_CAP_CMD23,
@@ -2073,9 +2092,9 @@ static struct spi_board_info spi0_board_info[] __initdata = {
 		.controller_data	=	&spi0_csi[0],
 	},
 
-#elif defined(CONFIG_PHONE_IPC_SPI)
+#elif defined(CONFIG_LINK_DEVICE_SPI)
 	{
-		.modalias = "ipc_spi",
+		.modalias = "modem_if_spi",
 		.bus_num = 0,
 		.chip_select = 0,
 		.max_speed_hz = 12*1000*1000,
@@ -3943,6 +3962,10 @@ static void u1_sound_init(void)
 		return;
 	}
 	gpio_direction_output(GPIO_MIC_BIAS_EN, 1);
+#ifdef CONFIG_TARGET_LOCALE_NA
+	s3c_gpio_setpull(GPIO_MIC_BIAS_EN, S3C_GPIO_PULL_NONE);
+#endif /* CONFIG_TARGET_LOCALE_NA */
+
 	gpio_set_value(GPIO_MIC_BIAS_EN, 0);
 	gpio_free(GPIO_MIC_BIAS_EN);
 
@@ -3952,6 +3975,10 @@ static void u1_sound_init(void)
 		return;
 	}
 	gpio_direction_output(GPIO_EAR_MIC_BIAS_EN, 1);
+#ifdef CONFIG_TARGET_LOCALE_NA
+	s3c_gpio_setpull(GPIO_EAR_MIC_BIAS_EN, S3C_GPIO_PULL_NONE);
+#endif /* CONFIG_TARGET_LOCALE_NA */
+
 	gpio_set_value(GPIO_EAR_MIC_BIAS_EN, 0);
 	gpio_free(GPIO_EAR_MIC_BIAS_EN);
 
@@ -3973,6 +4000,10 @@ static void u1_sound_init(void)
 			return;
 		}
 		gpio_direction_output(GPIO_SUB_MIC_BIAS_EN, 0);
+#ifdef CONFIG_TARGET_LOCALE_NA
+		s3c_gpio_setpull(GPIO_SUB_MIC_BIAS_EN, S3C_GPIO_PULL_NONE);
+#endif /* CONFIG_TARGET_LOCALE_NA */
+
 		gpio_free(GPIO_SUB_MIC_BIAS_EN);
 	}
 #endif /* #if defined(CONFIG_MACH_Q1_BD) */
@@ -4575,6 +4606,94 @@ static struct sec_bat_adc_table_data temper_table_ADC7[] =  {
 	{ 1669,	 -60 },
 	{ 1688,	 -70 },
 };
+#endif
+/* temperature table for ADC 7 */
+#ifdef CONFIG_TARGET_LOCALE_NA
+static struct sec_bat_adc_table_data  temper_table_ADC7[] =  {
+	{  145,  670 },
+	{  165,  660 },
+	{  185,  650 },
+	{  205,  640 },
+	{  225,  630 },
+	{  245,  620 },
+	{  265,  610 },
+	{  285,  600 },
+	{  305,  590 },
+	{  325,  580 },
+	{  345,  570 },
+	{  365,  560 },
+	{  385,  550 },
+	{  405,  540 },
+	{  425,  530 },
+	{  445,  520 },
+	{  465,  510 },
+	{  485,  500 },
+	{  505,  490 },
+	{  525,  480 },
+	{  545,  470 },
+	{  565,  460 },
+	{  585,  450 },
+	{  605,  440 },
+	{  625,  430 },
+	{  645,  420 },
+	{  665,  410 },
+	{  685,  400 },
+	{  705,  390 },
+	{  725,  380 },
+	{  745,  370 },
+	{  765,  360 },
+	{  785,  350 },
+	{  805,  340 },
+	{  825,  330 },
+	{  845,  320 },
+	{  865,  310 },
+	{  885,  300 },
+	{  905,  290 },
+	{  925,  280 },
+	{  945,  270 },
+	{  965,  260 },
+	{  995,  250 },
+	{ 1015,  240 },
+	{ 1045,  230 },
+	{ 1065,  220 },
+	{ 1085,  210 },
+	{ 1105,  200 },
+	{ 1125,  190 },
+	{ 1145,  180 },
+	{ 1165,  170 },
+	{ 1185,  160 },
+	{ 1205,  150 },
+	{ 1225,  140 },
+	{ 1245,  130 },
+	{ 1265,  120 },
+	{ 1285,  110 },
+	{ 1305,  100 },
+	{ 1335,   90 },
+	{ 1365,   80 },
+	{ 1395,   70 },
+	{ 1425,   60 },
+	{ 1455,   50 },
+	{ 1475,   40 },
+	{ 1495,   30 },
+	{ 1515,   20 },
+	{ 1535,   10 },
+	{ 1545,    0 },
+	{ 1555,  -10 },
+	{ 1565,  -20 },
+	{ 1575,  -30 },
+	{ 1585,  -40 },
+	{ 1595,  -50 },
+	{ 1605,  -60 },
+	{ 1615,  -70 },
+	{ 1625,  -80 },
+	{ 1635,  -90 },
+	{ 1645,  -100 },
+	{ 1655,  -110 },
+	{ 1665,  -120 },
+	{ 1675,  -130 },
+	{ 1685,  -140 },
+};
+
 #else
 /* temperature table for ADC 7 */
 static struct sec_bat_adc_table_data temper_table_ADC7[] = {
@@ -5052,11 +5171,55 @@ static struct sec_therm_adc_table adc_ch6_table[] = {
 };
 #endif
 
+/* when the next level is same as prev, returns -1 */
+static int get_exynos4210_siop_level(int temp)
+{
+	static int prev_temp = 400;
+	static int prev_level;
+	int level = -1;
+
+	if (temp > prev_temp) {
+		if (temp >= 610)
+			level = 4;
+		else if (temp >= 590)
+			level = 3;
+		else if (temp >= 540)
+			level = 2;
+		else if (temp >= 510)
+			level = 1;
+		else
+			level = 0;
+	} else {
+		if (temp < 480)
+			level = 0;
+		else if (temp < 510)
+			level = 1;
+		else if (temp < 540)
+			level = 2;
+		else if (temp < 590)
+			level = 3;
+		else
+			level = 4;
+
+		if (level > prev_level)
+			level = prev_level;
+	}
+
+	prev_temp = temp;
+	if (prev_level == level)
+		return -1;
+
+	prev_level = level;
+
+	return level;
+}
+
 static struct sec_therm_platform_data sec_therm_pdata = {
 	.adc_channel	= 6,
 	.adc_arr_size	= ARRAY_SIZE(adc_ch6_table),
 	.adc_table	= adc_ch6_table,
 	.polling_interval = 30 * 1000, /* msecs */
+	.get_siop_level = get_exynos4210_siop_level,
 };
 
 static struct platform_device sec_device_thermistor = {
@@ -5186,7 +5349,7 @@ static struct sec_jack_buttons_zone sec_jack_buttons_zones[] = {
 		/* 0 <= adc <=170, stable zone */
 		.code = KEY_MEDIA,
 		.adc_low = 0,
-#if defined(CONFIG_TARGET_LOCALE_NTT)
+#if defined(CONFIG_TARGET_LOCALE_NTT) || defined(CONFIG_TARGET_LOCALE_NA)
 		.adc_high = 150,
 #else
 		.adc_high = 170,
@@ -5195,7 +5358,7 @@ static struct sec_jack_buttons_zone sec_jack_buttons_zones[] = {
 	{
 		/* 171 <= adc <= 370, stable zone */
 		.code = KEY_VOLUMEUP,
-#if defined(CONFIG_TARGET_LOCALE_NTT)
+#if defined(CONFIG_TARGET_LOCALE_NTT) || defined(CONFIG_TARGET_LOCALE_NA)
 		.adc_low = 151,
 #else
 		.adc_low = 171,
@@ -5460,7 +5623,11 @@ static const u8 *mxt224_config[] = {
 #define MXT224E_THRESHOLD_BATT		50
 #define MXT224E_T48_THRESHOLD_BATT		28
 #define MXT224E_THRESHOLD_CHRG		40
+#if defined(CONFIG_MACH_U1_NA_SPR)
+#define MXT224E_CALCFG_BATT		0x72
+#else
 #define MXT224E_CALCFG_BATT		0x42
+#endif
 #define MXT224E_CALCFG_CHRG		0x52
 #if defined(CONFIG_TARGET_LOCALE_NA)
 #define MXT224E_ATCHFRCCALTHR_NORMAL		45
@@ -6241,6 +6408,27 @@ static struct i2c_board_info i2c_devs4[] __initdata = {
 #endif /* CONFIG_WIMAX_CMC */
 };
 #endif
+
+#if defined(CONFIG_WIMAX_CMC)
+static struct i2c_gpio_platform_data wmxeeprom_i2c_gpio_data = {
+	.sda_pin  = GPIO_CMC_SDA_18V,
+	.scl_pin  = GPIO_CMC_SCL_18V,
+	.udelay = 2,
+};
+static struct platform_device wmxeeprom_i2c_gpio_device = {
+	.name	= "i2c-gpio",
+	.id	= 18,
+	.dev	= {
+		.platform_data  = &wmxeeprom_i2c_gpio_data,
+	},
+};
+static struct i2c_board_info wmxeeprom_i2c_devices[] __initdata = {
+{
+	I2C_BOARD_INFO("wmxeeprom", 0x50),
+}
+};
+
+#endif /* CONFIG_WIMAX_CMC */
 
 #ifdef CONFIG_S3C_DEV_I2C5
 /* I2C5 */
@@ -7167,8 +7355,9 @@ static struct platform_device *smdkc210_devices[] __initdata = {
 	&exynos4_device_pd[PD_LCD1],
 	&exynos4_device_pd[PD_CAM],
 	&exynos4_device_pd[PD_TV],
+#ifndef CONFIG_TARGET_LOCALE_NA
 	&exynos4_device_pd[PD_GPS],
-
+#endif /* CONFIG_TARGET_LOCALE_NA */
 #if defined(CONFIG_WIMAX_CMC)
 	&s3c_device_cmc732,
 #endif
@@ -7243,6 +7432,10 @@ static struct platform_device *smdkc210_devices[] __initdata = {
 
 	/* consumer driver should resume after resuming i2c drivers */
 	&u1_regulator_consumer,
+
+#if defined(CONFIG_WIMAX_CMC)
+	&wmxeeprom_i2c_gpio_device,
+#endif
 
 #ifdef CONFIG_EXYNOS4_DEV_MSHC
 	&s3c_device_mshci,
@@ -7903,6 +8096,11 @@ static void __init smdkc210_machine_init(void)
 						ARRAY_SIZE(i2c_devs17_emul));
 #endif
 #endif
+#endif
+
+#if defined(CONFIG_WIMAX_CMC)
+	i2c_register_board_info(18, wmxeeprom_i2c_devices,
+			ARRAY_SIZE(wmxeeprom_i2c_devices));
 #endif
 
 

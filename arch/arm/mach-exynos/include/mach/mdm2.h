@@ -32,6 +32,7 @@ struct mdm_platform_data {
 	struct platform_device *peripheral_platform_device_ehci;
 	struct platform_device *peripheral_platform_device_ohci;
 	const unsigned int ramdump_timeout_ms;
+	void (*modem_complete)(struct device *dev);
 };
 
 struct mdm_hsic_pm_platform_data {
