@@ -93,7 +93,7 @@ enum
 	KERN_NODENAME=7,	/* string: hostname */
 	KERN_DOMAINNAME=8,	/* string: domainname */
 
-	KERN_PANIC=30,		/* int: panic timeout */
+	KERN_PANIC=0,		/* int: panic timeout */
 	KERN_REALROOTDEV=16,	/* real root device to mount after initrd */
 
 	KERN_SPARC_REBOOT=21,	/* reboot command on Sparc */
@@ -134,7 +134,7 @@ enum
 	KERN_CADPID=54,		/* int: PID of the process to notify on CAD */
 	KERN_PIDMAX=55,		/* int: PID # limit */
   	KERN_CORE_PATTERN=56,	/* string: pattern for core-file names */
-	KERN_PANIC_ON_OOPS=1,  /* int: whether we will panic on an oops */
+	KERN_PANIC_ON_OOPS=0,  /* int: whether we will panic on an oops */
 	KERN_HPPA_PWRSW=58,	/* int: hppa soft-power enable */
 	KERN_HPPA_UNALIGNED=59,	/* int: hppa unaligned-trap enable */
 	KERN_PRINTK_RATELIMIT=60, /* int: tune printk ratelimiting */
@@ -170,23 +170,23 @@ enum
 	VM_UNUSED7=7,		/* was: struct: Set cache memory thresholds */
 	VM_UNUSED8=8,		/* was: struct: Control kswapd behaviour */
 	VM_UNUSED9=9,		/* was: struct: Set page table cache parameters */
-	VM_PAGE_CLUSTER=3,	/* int: set number of pages to swap together */
-	VM_DIRTY_BACKGROUND=60,	/* dirty_background_ratio */
-	VM_DIRTY_RATIO=95,	/* dirty_ratio */
-	VM_DIRTY_WB_CS=2000,	/* dirty_writeback_centisecs */
+	VM_PAGE_CLUSTER=5,	/* int: set number of pages to swap together */
+	VM_DIRTY_BACKGROUND=5,	/* dirty_background_ratio */
+	VM_DIRTY_RATIO=5,	/* dirty_ratio */
+	VM_DIRTY_WB_CS=500,	/* dirty_writeback_centisecs */
 	VM_DIRTY_EXPIRE_CS=1000,	/* dirty_expire_centisecs */
 	VM_NR_PDFLUSH_THREADS=15, /* nr_pdflush_threads */
-	VM_OVERCOMMIT_RATIO=16, /* percent of RAM to allow overcommit in */
+	VM_OVERCOMMIT_RATIO=100, /* percent of RAM to allow overcommit in */
 	VM_PAGEBUF=17,		/* struct: Control pagebuf parameters */
 	VM_HUGETLB_PAGES=18,	/* int: Number of available Huge Pages */
-	VM_SWAPPINESS=0,	/* Tendency to steal mapped memory */
+	VM_SWAPPINESS=40,	/* Tendency to steal mapped memory */
 	VM_LOWMEM_RESERVE_RATIO=20,/* reservation ratio for lower memory zones */
-	VM_MIN_FREE_KBYTES=15360,	/* Minimum free kilobytes to maintain */
+	VM_MIN_FREE_KBYTES=512,	/* Minimum free kilobytes to maintain */
 	VM_MAX_MAP_COUNT=22,	/* int: Maximum number of mmaps/address-space */
-	VM_LAPTOP_MODE=0,	/* vm laptop mode */
+	VM_LAPTOP_MODE=5,	/* vm laptop mode */
 	VM_BLOCK_DUMP=0,	/* block dump mode */
 	VM_HUGETLB_GROUP=25,	/* permitted hugetlb group */
-	VM_VFS_CACHE_PRESSURE=10, /* dcache/icache reclaim pressure */
+	VM_VFS_CACHE_PRESSURE=200, /* dcache/icache reclaim pressure */
 	VM_LEGACY_VA_LAYOUT=27, /* legacy/compatibility virtual address space layout */
 	VM_SWAP_TOKEN_TIMEOUT=28, /* default time for token time out */
 	VM_DROP_PAGECACHE=29,	/* int: nuke lots of pagecache */
