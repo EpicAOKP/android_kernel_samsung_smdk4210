@@ -137,6 +137,13 @@ struct s3cfb_extdsp_lcd {
 #include <linux/irq.h>
 #include "board-mobile.h"
 
+#ifdef CONFIG_CPU_FREQ_GOV_HYPERvTNT_2_PHASE
+int set_two_phase_freq_hypervTNT(int cpufreq);
+#endif
+#ifdef CONFIG_CPU_FREQ_GOV_HYPERvTNT_3_PHASE
+int set_three_phase_freq_hypervTNT(int cpufreq);
+#endif
+
 /* Following are default values for UCON, ULCON and UFCON UART registers */
 #define SMDK4212_UCON_DEFAULT	(S3C2410_UCON_TXILEVEL |	\
 				 S3C2410_UCON_RXILEVEL |	\
@@ -2053,6 +2060,13 @@ static void __init midas_machine_init(void)
 	ppmu_init(&exynos_ppmu[PPMU_DMC0], &exynos4_busfreq.dev);
 	ppmu_init(&exynos_ppmu[PPMU_DMC1], &exynos4_busfreq.dev);
 	ppmu_init(&exynos_ppmu[PPMU_CPU], &exynos4_busfreq.dev);
+#endif
+
+#ifdef CONFIG_CPU_FREQ_GOV_HYPERvTNT_2_PHASE
+  set_two_phase_freq_hypervTNT(CONFIG_CPU_FREQ_HYPERvTNTvTNT_2_PHASE_FREQ);
+#endif
+#ifdef CONFIG_CPU_FREQ_GOV_HYPERvTNT_3_PHASE
+  set_three_phase_freq_hypervTNT(CONFIG_CPU_FREQ_GOV_HYPERvTNT_3_PHASE_FREQ);
 #endif
 
 	/* 400 kHz for initialization of MMC Card  */

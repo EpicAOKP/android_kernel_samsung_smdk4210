@@ -123,6 +123,18 @@ config CPU_FREQ_DEFAULT_GOV_PEGASUSQ
 	bool "pegasusq"
 	select CPU_FREQ_GOV_PEGASUSQ
 
+config CPU_FREQ_DEFAULT_GOV_HYPERvTNT
+  bool "hypervTNT"
+  select CPU_FREQ_GOV_HYPERvTNT
+  help
+    Use the CPUFreq governor 'hypervTNT' as default.
+
+config CPU_FREQ_DEFAULT_GOV_SMARTASS2
+  bool "smartass2"
+  select CPU_FREQ_GOV_SMARTASS2
+  help
+    Use the CPUFreq governor 'smartassV2' as default.
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -265,6 +277,65 @@ config CPU_FREQ_GOV_ADAPTIVE
 
 config CPU_FREQ_GOV_PEGASUSQ
 	tristate "'pegasusq' cpufreq policy governor"
+
+config CPU_FREQ_GOV_HYPERvTNT
+  tristate "'hypervTNT' cpufreq governor"
+  depends on CPU_FREQ
+  help
+          'hypervTNT' - a tweaked "ondemand" based smart and smooth optimized governor!
+ 
+config CPU_FREQ_GOV_HYPERvTNT_2_PHASE
+  tristate "'2-phase' power-efficiency hypervTNT algorithm"
+  depends on CPU_FREQ_GOV_HYPERvTNT
+  help
+    '2-phase' - This driver adds a new algo to save power
+
+config CPU_FREQ_GOV_HYPERvTNT_2_PHASE_FREQ
+  int "'2-phase' hypervTNT frequency"
+  default 918000
+  depends on CPU_FREQ_GOV_HYPERvTNT
+  depends on CPU_FREQ_GOV_HYPERvTNT_2_PHASE
+
+config CPU_FREQ_GOV_HYPERvTNT_3_PHASE
+  tristate "'3-phase' power-efficiency hypervTNT algorithm"
+  depends on CPU_FREQ_GOV_HYPERvTNT
+  depends on CPU_FREQ_GOV_HYPERvTNT_2_PHASE
+  help
+    '3-phase' - This driver adds a new algo to save power
+
+config CPU_FREQ_GOV_HYPERvTNT_3_PHASE_FREQ
+  int "'3-phase' hyperRvTNT frequency"
+  default 1188000
+  depends on CPU_FREQ_GOV_HYPERvTNT
+  depends on CPU_FREQ_GOV_HYPERvTNT_2_PHASE
+  depends on CPU_FREQ_GOV_HYPERvTNT_3_PHASE
+
+config CPU_FREQ_GOV_HYPERvTNT_GPU_CONTROL
+  tristate "'gpu_control' power-efficiency hypervTNT algorithm"
+  depends on CPU_FREQ_GOV_HYPERvTNT
+  depends on CPU_FREQ_GOV_HYPERvTNT_2_PHASE
+  help
+    'gpu_control' - This driver adds a new algo to save power
+ 
+config CPU_FREQ_GOV_HYPERvTNT_LOWBAT_POWERSAVE
+  tristate "'lowbat_powersave' power-efficiency hypervTNT algorithm"
+  depends on CPU_FREQ_GOV_HYPERvTNT
+  help
+    'lowbat_powersave' - This driver adds a new algo to save power
+
+config CPU_FREQ_GOV_HYPERvTNT_ALLOW_BYPASS
+  tristate "Allows bypassing phases"
+  depends on CPU_FREQ_GOV_HYPERvTNT
+  depends on CPU_FREQ_GOV_HYPERvTNT_2_PHASE
+  help
+    'allow_bypass' - This driver adds a bypass to the phases
+
+config CPU_FREQ_GOV_SMARTASS2
+  tristate "'smartassV2' cpufreq governor"
+  depends on CPU_FREQ
+  help
+    'smartassV2' - a "smart" governor
+    If in doubt, say N. 
 
 config CPU_FREQ_GOV_SLP
 	tristate "'slp' cpufreq policy governor"
