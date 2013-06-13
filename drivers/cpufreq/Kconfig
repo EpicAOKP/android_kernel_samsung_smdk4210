@@ -135,6 +135,12 @@ config CPU_FREQ_DEFAULT_GOV_SMARTASS2
   help
     Use the CPUFreq governor 'smartassV2' as default.
 
+config CPU_FREQ_DEFAULT_GOV_LIONHEART
+  bool "lionheart"
+  select CPU_FREQ_GOV_LIONHEART
+  help
+    Use the CPUFreq governor 'Lionheart' as default.
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -336,6 +342,12 @@ config CPU_FREQ_GOV_SMARTASS2
   help
     'smartassV2' - a "smart" governor
     If in doubt, say N. 
+ 
+config CPU_FREQ_GOV_LIONHEART
+  tristate "'Lionheart' cpufreq governor"
+  depends on CPU_FREQ
+  help
+    'Lionheart' - A brave and agile conservative-based governor.
 
 config CPU_FREQ_GOV_SLP
 	tristate "'slp' cpufreq policy governor"
@@ -355,6 +367,10 @@ config CPU_FREQ_DVFS_MONITOR
 	  This option adds a proc node for dvfs monitoring.
 	  /proc/dvfs_mon
 
+config SEC_LIMIT_LCD_OFF_CPU_MAX_FREQ
+  bool
+  default y
+  depends on CPU_FREQ_GOV_ONDEMAND
 
 menu "x86 CPU frequency scaling drivers"
 depends on X86
